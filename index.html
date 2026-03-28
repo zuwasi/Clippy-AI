@@ -197,21 +197,27 @@
     <div class="setting-row">
       <label>Provider:</label>
       <select id="provider" onchange="onProviderChange()">
+        <option value="groq" selected>Groq (Free)</option>
         <option value="openai">OpenAI</option>
+        <option value="gemini">Google Gemini (Free)</option>
         <option value="custom">Custom (LM Studio / Ollama / other)</option>
       </select>
     </div>
     <div class="setting-row">
       <label>API URL:</label>
-      <input type="text" id="api-url" value="https://api.openai.com/v1/chat/completions">
+      <input type="text" id="api-url" value="https://api.groq.com/openai/v1/chat/completions">
     </div>
     <div class="setting-row">
       <label>API Key:</label>
-      <input type="password" id="api-key" placeholder="sk-...">
+      <input type="password" id="api-key" placeholder="gsk_...  (get free key at console.groq.com)">
     </div>
     <div class="setting-row">
       <label>Model:</label>
-      <input type="text" id="model" value="gpt-4o-mini">
+      <input type="text" id="model" value="llama-3.3-70b-versatile">
+    </div>
+    <div class="setting-row">
+      <label></label>
+      <span style="font-size:12px; color:#333;">🆓 Get a free Groq key: <a href="https://console.groq.com/keys" target="_blank" style="color:#000080;">console.groq.com/keys</a></span>
     </div>
     <div class="setting-row">
       <label></label>
@@ -269,15 +275,16 @@ function onProviderChange() {
   var urlInput = document.getElementById('api-url');
   var keyInput = document.getElementById('api-key');
   var modelInput = document.getElementById('model');
-  if (prov === 'openai') {
-    urlInput.value = 'https://api.openai.com/v1/chat/completions';
-    modelInput.value = 'gpt-4o-mini';
-    keyInput.placeholder = 'sk-...';
-  } else {
-    urlInput.value = 'http://localhost:1234/v1/chat/completions';
-    modelInput.value = 'local-model';
-    keyInput.placeholder = '(optional for local)';
-  }
+  var providers = {
+    groq:   { url: 'https://api.groq.com/openai/v1/chat/completions',   model: 'llama-3.3-70b-versatile', ph: 'gsk_...  (get free key at console.groq.com)' },
+    openai: { url: 'https://api.openai.com/v1/chat/completions',        model: 'gpt-4o-mini',             ph: 'sk-...' },
+    gemini: { url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', model: 'gemini-2.0-flash', ph: 'AIza...  (get free key at aistudio.google.com)' },
+    custom: { url: 'http://localhost:1234/v1/chat/completions',          model: 'local-model',             ph: '(optional for local)' }
+  };
+  var p = providers[prov] || providers.custom;
+  urlInput.value = p.url;
+  modelInput.value = p.model;
+  keyInput.placeholder = p.ph;
 }
 
 function saveSettings() {
