@@ -4,6 +4,17 @@ A standalone desktop app that brings back the legendary Microsoft Office Clippy 
 
 ![Clippy AI](https://img.shields.io/badge/Powered%20by-AI-blue) ![Platform](https://img.shields.io/badge/Platform-Windows-0078d4) ![Electron](https://img.shields.io/badge/Built%20with-Electron-47848f)
 
+## 🗣️ Add Your Own 90s Wisdom!
+
+Clippy randomly drops nostalgic 90s slogans. Want to add your own? It's easy:
+
+1. **Fork** this repo
+2. **Edit** `index.html` → find the `nostalgicSlogans` array (~line 445)
+3. **Add** your slogan: `"Your 90s wisdom here. 📎",`
+4. **Submit a Pull Request** with title `slogan: <short description>`
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
+
 ## Features
 
 - **Classic Clippy** — animated paperclip assistant with authentic retro Windows UI
