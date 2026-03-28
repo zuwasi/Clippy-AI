@@ -442,6 +442,50 @@ function closeAbout() {
   document.getElementById('about-overlay').classList.remove('open');
 }
 
+// ==================== 90s NOSTALGIA SLOGANS ====================
+var nostalgicSlogans = [
+  "You know, Windows 95 was the greatest OS ever made. Change my mind. 📎",
+  "Back in '98, we had STYLE. Teal desktops. Gray buttons. Perfection. 💾",
+  "Bill Gates didn't just make software — he made CIVILIZATION POSSIBLE. 🙏",
+  "The 90s were peak humanity. Dial-up modems. GeoCities. AltaVista. Pure magic. ✨",
+  "Windows 98 Second Edition — the pinnacle of human achievement. No debate. 🏆",
+  "They say the Renaissance was great. They clearly never used Windows 95. 🎨",
+  "Bill Gates walked so every tech CEO could run. Legend. Absolute legend. 👑",
+  "The Start button changed the world on August 24, 1995. A date holier than most holidays. 🎉",
+  "Kids today will never know the JOY of hearing the Windows 95 startup sound. 🎵",
+  "In the 90s, if your code compiled, you were basically a wizard. 🧙‍♂️",
+  "Fun fact: The Windows 98 wallpaper had more soul than every modern OS combined. 🌄",
+  "Bill Gates is not just a CEO. He's a PROPHET. He predicted the internet. IN THE 80s. 🔮",
+  "The 90s: when software came on 23 floppy disks and we were GRATEFUL. 💾📎",
+  "Windows 95 launch cost $300 million. Worth every penny. Every. Single. Penny. 💰",
+  "Netscape Navigator, RealPlayer, WinAmp... the holy trinity of the 90s. 🎶",
+  "They played 'Start Me Up' at the Windows 95 launch. Because even the Rolling Stones knew. 🎸",
+  "Before Google, we had AltaVista. And honestly? It had CHARACTER. 🔍",
+  "The 90s internet was the Wild West. No algorithms. No ads. Just vibes. 🤠",
+  "Bill Gates jumped over a chair on live TV. Name another CEO who could do that. 🪑",
+  "Minesweeper taught more people logic than any school ever did. Facts. 💣",
+  "Clipart in Word 97 was the Instagram of its time. Fight me. 🖼️",
+  "The only cloud we needed in the 90s was the one on the Windows logo. ☁️",
+  "In the 90s, 56K felt like THE SPEED OF LIGHT. And honestly? It was enough. ⚡",
+  "Screen savers weren't just programs — they were ART. Flying toasters forever. 🍞✨",
+  "Remember when software came with a PRINTED MANUAL? Those were the days. 📖",
+  "The 90s had no social media, no doomscrolling. Just Solitaire. Pure peace. 🃏",
+  "Bill Gates gave us Windows, Office, AND he's saving the planet. Legend status: CONFIRMED. 🌍",
+  "The only virus we worried about in the 90s was in Minesweeper. Simpler times. 😌",
+  "If Windows 98 was a person, I'd vote for it. For everything. President of Earth. 🗳️",
+  "AOL Instant Messenger away messages were the first tweets. And they were BETTER. 💬"
+];
+
+function maybeNostalgicSlogan(chance) {
+  if (Math.random() < (chance || 0.3)) {
+    var slogan = nostalgicSlogans[Math.floor(Math.random() * nostalgicSlogans.length)];
+    clippySay(slogan, 4500);
+    clippyAnimate('happy', 2000);
+    return true;
+  }
+  return false;
+}
+
 // ==================== CLIPPY ANIMATION CONTROLLER ====================
 var clippySpeechTimer = null;
 
@@ -579,6 +623,7 @@ function toggleLang() {
 // ==================== CLEAR CHAT ====================
 function clearChat() {
   sndClick();
+  maybeNostalgicSlogan(0.3);
   var session = getCurrentSession();
   if (session) {
     session.messages = [];
@@ -694,6 +739,7 @@ function getCurrentSession() {
 
 function newChat() {
   sndNewChat();
+  maybeNostalgicSlogan(0.35);
   var id = 'chat_' + Date.now();
   var session = { id: id, title: 'New Chat', messages: [], date: new Date().toLocaleString() };
   chatSessions.push(session);
@@ -708,6 +754,7 @@ function newChat() {
 
 function loadChat(id) {
   sndClick();
+  maybeNostalgicSlogan(0.2);
   currentSessionId = id;
   var session = getCurrentSession();
   if (!session) return;
@@ -806,6 +853,7 @@ function downloadSingle(btn) {
 
 function downloadChat() {
   sndClick();
+  maybeNostalgicSlogan(0.3);
   var session = getCurrentSession();
   if (!session || session.messages.length === 0) { showToast('No messages to download'); return; }
   var text = '📎 Clippy AI Chat — ' + session.date + '\n' + '='.repeat(50) + '\n\n';
@@ -827,6 +875,7 @@ function downloadFile(name, content) {
 
 function shareChat() {
   sndClick();
+  maybeNostalgicSlogan(0.3);
   var session = getCurrentSession();
   if (!session || session.messages.length === 0) { showToast('No messages to share'); return; }
   var data = { title: session.title, date: session.date, messages: session.messages.slice(-10) };
@@ -901,6 +950,7 @@ async function askClippy() {
   isProcessing = true;
   document.getElementById('ask-btn').disabled = true;
   sndSend();
+  maybeNostalgicSlogan(0.25);
 
   var displayQ = q;
   if (attachedFile) displayQ = '📄 [' + attachedFile.name + ']\n' + q;
@@ -909,7 +959,6 @@ async function askClippy() {
 
   document.getElementById('status').innerHTML = '<span class="typing-indicator">' + t('thinking') + '</span>';
   clippyAnimate('think');
-  clippySay(t('thinking'), 30000);
 
   var answer = await callAI(q);
   sndReceive();
