@@ -1,0 +1,43 @@
+{
+  "name": "clippy-ai-assistant",
+  "version": "1.0.0",
+  "description": "Clippy AI Assistant - standalone desktop app powered by modern AI with a retro Clippy interface",
+  "main": "main.js",
+  "author": "zuwasi",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.zuwasi.clippy-ai",
+    "productName": "Clippy AI Assistant",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Clippy AI Assistant"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "package.json"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^26.8.1"
+  }
+}

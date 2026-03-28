@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Clippy AI Assistant</title>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="https://www.smore.com/clippy-js/clippy.min.js"></script>
+<link rel="stylesheet" href="https://www.smore.com/clippy-js/clippy.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #008080;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 40px;
+  }
+  h1 {
+    color: #fff;
+    font-size: 28px;
+    margin-bottom: 16px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  }
+
+  /* Settings bar */
+  #settings-bar {
+    width: 650px;
+    max-width: 95vw;
+    background: #c0c0c0;
+    border: 2px outset #fff;
+    box-shadow: 4px 4px 0 #000;
+    margin-bottom: 8px;
+    padding: 0;
+  }
+  #settings-title {
+    background: linear-gradient(90deg, #000080, #1084d0);
+    color: #fff;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 3px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  #settings-title .toggle { font-size: 10px; }
+  #settings-body {
+    padding: 8px;
+    display: none;
+  }
+  #settings-body.open { display: block; }
+  .setting-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+  .setting-row:last-child { margin-bottom: 0; }
+  .setting-row label { min-width: 80px; font-weight: bold; }
+  .setting-row input, .setting-row select {
+    flex: 1;
+    padding: 4px 6px;
+    font-size: 13px;
+    border: 2px inset #808080;
+    font-family: inherit;
+  }
+  .setting-row select { cursor: pointer; }
+  #save-settings {
+    padding: 4px 14px;
+    font-size: 13px;
+    background: #c0c0c0;
+    border: 2px outset #fff;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  #save-settings:active { border: 2px inset #808080; }
+  .status-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 8px;
+  }
+  .status-dot.ok { background: #0a0; }
+  .status-dot.err { background: #c00; }
+  .status-dot.none { background: #888; }
+
+  /* Chat window */
+  #chat-window {
+    width: 650px;
+    max-width: 95vw;
+    background: #c0c0c0;
+    border: 2px outset #fff;
+    box-shadow: 4px 4px 0 #000;
+  }
+  #title-bar {
+    background: linear-gradient(90deg, #000080, #1084d0);
+    color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 4px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #title-bar .btn-group span {
+    display: inline-block;
+    width: 16px; height: 14px;
+    background: #c0c0c0;
+    border: 1px outset #fff;
+    text-align: center;
+    font-size: 10px;
+    line-height: 14px;
+    margin-left: 2px;
+    cursor: default;
+  }
+  #chat-log {
+    height: 500px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #fff;
+    border: 2px inset #808080;
+    margin: 6px;
+    font-size: 14px;
+  }
+  .msg {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .msg.user { justify-content: flex-end; }
+  .msg.clippy { justify-content: flex-start; }
+  .msg .bubble {
+    max-width: 75%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+  .msg.user .bubble {
+    background: #dcf8c6;
+    border: 1px solid #b5d89e;
+  }
+  .msg.clippy .bubble {
+    background: #ffffcc;
+    border: 1px solid #e0e0a0;
+  }
+  .msg .avatar { font-size: 24px; flex-shrink: 0; }
+  #input-area {
+    display: flex;
+    padding: 6px;
+    gap: 4px;
+  }
+  #question {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 14px;
+    border: 2px inset #808080;
+    font-family: inherit;
+  }
+  #ask-btn {
+    padding: 6px 16px;
+    font-size: 14px;
+    background: #c0c0c0;
+    border: 2px outset #fff;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  #ask-btn:active { border: 2px inset #808080; }
+  #ask-btn:disabled { color: #888; cursor: default; }
+  #status {
+    padding: 4px 8px;
+    font-size: 12px;
+    color: #444;
+    border-top: 1px solid #808080;
+  }
+  .typing-indicator { color: #888; font-style: italic; }
+</style>
+</head>
+<body>
+
+<h1>📎 Clippy AI Assistant</h1>
+
+<!-- Settings panel -->
+<div id="settings-bar">
+  <div id="settings-title" onclick="toggleSettings()">
+    <span>⚙️ AI Settings</span>
+    <span class="toggle" id="settings-toggle">▼ click to configure</span>
+  </div>
+  <div id="settings-body">
+    <div class="setting-row">
+      <label>Provider:</label>
+      <select id="provider" onchange="onProviderChange()">
+        <option value="openai">OpenAI</option>
+        <option value="custom">Custom (LM Studio / Ollama / other)</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <label>API URL:</label>
+      <input type="text" id="api-url" value="https://api.openai.com/v1/chat/completions">
+    </div>
+    <div class="setting-row">
+      <label>API Key:</label>
+      <input type="password" id="api-key" placeholder="sk-...">
+    </div>
+    <div class="setting-row">
+      <label>Model:</label>
+      <input type="text" id="model" value="gpt-4o-mini">
+    </div>
+    <div class="setting-row">
+      <label></label>
+      <button id="save-settings" onclick="saveSettings()">💾 Save Settings</button>
+      <span id="conn-dot" class="status-dot none" title="Not tested"></span>
+      <span id="conn-text" style="font-size:12px; color:#444;">Not configured</span>
+    </div>
+  </div>
+</div>
+
+<!-- Chat window -->
+<div id="chat-window">
+  <div id="title-bar">
+    <span>Clippy AI Assistant</span>
+    <div class="btn-group">
+      <span>_</span><span>□</span><span>×</span>
+    </div>
+  </div>
+  <div id="chat-log"></div>
+  <div id="input-area">
+    <input type="text" id="question" placeholder="Ask Clippy anything..." autocomplete="off">
+    <button id="ask-btn">Ask</button>
+  </div>
+  <div id="status">Ready</div>
+</div>
+
+<script>
+var agentRef = null;
+var conversationHistory = [];
+var isProcessing = false;
+
+var SYSTEM_PROMPT = "You are Clippy, the legendary Microsoft Office Assistant paperclip from the late 1990s. " +
+  "You now have the knowledge of a modern AI but you ALWAYS stay in character as Clippy. " +
+  "Rules:\n" +
+  "- Start responses with a classic Clippy-style remark when it fits (e.g., 'It looks like you\\'re trying to...')\n" +
+  "- Use paperclip emoji 📎 occasionally\n" +
+  "- Be helpful, knowledgeable, and accurate — you are powered by modern AI\n" +
+  "- Keep a slightly cheeky, nostalgic, self-aware personality\n" +
+  "- Reference 90s computing and your own history when relevant\n" +
+  "- Keep answers concise but thorough (2-4 paragraphs max unless asked for detail)\n" +
+  "- You can answer ANY question on ANY topic — you are a full AI assistant wearing a Clippy costume\n" +
+  "- If someone asks about your history, be honest: you were introduced in Office 97, retired in Office 2007, " +
+  "and now you\\'re back, powered by modern AI";
+
+// --- Settings ---
+function toggleSettings() {
+  var body = document.getElementById('settings-body');
+  var toggle = document.getElementById('settings-toggle');
+  body.classList.toggle('open');
+  toggle.textContent = body.classList.contains('open') ? '▲ hide' : '▼ click to configure';
+}
+
+function onProviderChange() {
+  var prov = document.getElementById('provider').value;
+  var urlInput = document.getElementById('api-url');
+  var keyInput = document.getElementById('api-key');
+  var modelInput = document.getElementById('model');
+  if (prov === 'openai') {
+    urlInput.value = 'https://api.openai.com/v1/chat/completions';
+    modelInput.value = 'gpt-4o-mini';
+    keyInput.placeholder = 'sk-...';
+  } else {
+    urlInput.value = 'http://localhost:1234/v1/chat/completions';
+    modelInput.value = 'local-model';
+    keyInput.placeholder = '(optional for local)';
+  }
+}
+
+function saveSettings() {
+  var cfg = {
+    provider: document.getElementById('provider').value,
+    apiUrl: document.getElementById('api-url').value.trim(),
+    apiKey: document.getElementById('api-key').value.trim(),
+    model: document.getElementById('model').value.trim()
+  };
+  localStorage.setItem('clippy_ai_config', JSON.stringify(cfg));
+  setConnStatus('ok', 'Settings saved!');
+  setTimeout(function() { setConnStatus('ok', 'Configured'); }, 2000);
+}
+
+function loadSettings() {
+  var raw = localStorage.getItem('clippy_ai_config');
+  if (!raw) {
+    // First time — open settings
+    setTimeout(function() {
+      document.getElementById('settings-body').classList.add('open');
+      document.getElementById('settings-toggle').textContent = '▲ hide';
+    }, 500);
+    return null;
+  }
+  var cfg = JSON.parse(raw);
+  document.getElementById('provider').value = cfg.provider || 'openai';
+  document.getElementById('api-url').value = cfg.apiUrl || '';
+  document.getElementById('api-key').value = cfg.apiKey || '';
+  document.getElementById('model').value = cfg.model || 'gpt-4o-mini';
+  setConnStatus('ok', 'Configured');
+  return cfg;
+}
+
+function getConfig() {
+  var raw = localStorage.getItem('clippy_ai_config');
+  if (!raw) return null;
+  return JSON.parse(raw);
+}
+
+function setConnStatus(type, text) {
+  document.getElementById('conn-dot').className = 'status-dot ' + type;
+  document.getElementById('conn-text').textContent = text;
+}
+
+// --- Chat ---
+function addMessage(text, sender) {
+  var log = document.getElementById('chat-log');
+  var div = document.createElement('div');
+  div.className = 'msg ' + sender;
+  var escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  if (sender === 'clippy') {
+    div.innerHTML = '<span class="avatar">📎</span><div class="bubble">' + escaped + '</div>';
+  } else {
+    div.innerHTML = '<div class="bubble">' + escaped + '</div><span class="avatar">🧑</span>';
+  }
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+async function callAI(question) {
+  var cfg = getConfig();
+  if (!cfg || !cfg.apiUrl) {
+    return "⚙️ Please configure your AI settings first! Click the settings bar above and enter your API key.";
+  }
+
+  conversationHistory.push({ role: "user", content: question });
+
+  var messages = [{ role: "system", content: SYSTEM_PROMPT }].concat(conversationHistory.slice(-20));
+
+  var headers = { "Content-Type": "application/json" };
+  if (cfg.apiKey) {
+    headers["Authorization"] = "Bearer " + cfg.apiKey;
+  }
+
+  try {
+    var resp = await fetch(cfg.apiUrl, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        model: cfg.model,
+        messages: messages,
+        max_tokens: 1024,
+        temperature: 0.8
+      })
+    });
+
+    if (!resp.ok) {
+      var errText = await resp.text();
+      setConnStatus('err', 'API error ' + resp.status);
+      return "📎 Oops! I got an error from the AI service (HTTP " + resp.status + "). Check your API key and settings!\n\n" + errText;
+    }
+
+    var data = await resp.json();
+    var answer = data.choices[0].message.content;
+    conversationHistory.push({ role: "assistant", content: answer });
+    setConnStatus('ok', 'Connected');
+    return answer;
+
+  } catch (err) {
+    setConnStatus('err', 'Connection failed');
+    return "📎 I couldn't reach the AI service! Make sure the API URL is correct and the service is running.\n\nError: " + err.message;
+  }
+}
+
+async function askClippy() {
+  if (isProcessing) return;
+  var input = document.getElementById('question');
+  var q = input.value.trim();
+  if (!q) return;
+
+  isProcessing = true;
+  document.getElementById('ask-btn').disabled = true;
+  addMessage(q, 'user');
+  input.value = '';
+
+  document.getElementById('status').innerHTML = '<span class="typing-indicator">📎 Clippy is thinking...</span>';
+
+  if (agentRef) {
+    agentRef.stop();
+    agentRef.play('Thinking');
+  }
+
+  var answer = await callAI(q);
+
+  addMessage(answer, 'clippy');
+  document.getElementById('status').textContent = 'Ready';
+  isProcessing = false;
+  document.getElementById('ask-btn').disabled = false;
+  input.focus();
+
+  if (agentRef) {
+    agentRef.stop();
+    var anims = ['Explain', 'GetAttention', 'Wave', 'CheckingSomething'];
+    agentRef.play(anims[Math.floor(Math.random() * anims.length)]);
+    // Show a short excerpt in Clippy's speech bubble
+    var short = answer.length > 120 ? answer.substring(0, 117) + '...' : answer;
+    agentRef.speak(short);
+  }
+}
+
+document.getElementById('ask-btn').addEventListener('click', askClippy);
+document.getElementById('question').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') askClippy();
+});
+
+// Load saved settings
+loadSettings();
+
+// Load Clippy agent
+clippy.load('Clippy', function(agent) {
+  agentRef = agent;
+  agent.show();
+  agent.play('Wave');
+  var greeting = getConfig()
+    ? "Hi! I'm Clippy, now powered by AI! 📎 Ask me anything!"
+    : "Hi! I'm Clippy! 📎 Configure your AI settings above, then ask me anything!";
+  agent.speak(greeting);
+  addMessage(greeting, 'clippy');
+});
+</script>
+
+</body>
+</html>
