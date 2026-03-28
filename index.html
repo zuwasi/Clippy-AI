@@ -15,183 +15,158 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    padding-top: 40px;
+    padding-top: 30px;
   }
-  h1 {
-    color: #fff;
-    font-size: 28px;
-    margin-bottom: 16px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-  }
+  h1 { color: #fff; font-size: 26px; margin-bottom: 12px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
 
-  /* Settings bar */
+  /* Top toolbar */
+  #toolbar {
+    width: 720px; max-width: 95vw;
+    display: flex; gap: 4px; margin-bottom: 4px; flex-wrap: wrap;
+  }
+  .tb-btn {
+    padding: 3px 10px; font-size: 12px; background: #c0c0c0;
+    border: 2px outset #fff; cursor: pointer; font-family: inherit; white-space: nowrap;
+  }
+  .tb-btn:active { border: 2px inset #808080; }
+  .tb-btn.active { border: 2px inset #808080; background: #a0a0a0; }
+
+  /* Settings panel */
   #settings-bar {
-    width: 650px;
-    max-width: 95vw;
-    background: #c0c0c0;
-    border: 2px outset #fff;
-    box-shadow: 4px 4px 0 #000;
-    margin-bottom: 8px;
-    padding: 0;
+    width: 720px; max-width: 95vw; background: #c0c0c0;
+    border: 2px outset #fff; box-shadow: 2px 2px 0 #000; margin-bottom: 4px;
   }
   #settings-title {
     background: linear-gradient(90deg, #000080, #1084d0);
-    color: #fff;
-    font-weight: bold;
-    font-size: 13px;
-    padding: 3px 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    user-select: none;
+    color: #fff; font-weight: bold; font-size: 13px; padding: 3px 8px;
+    cursor: pointer; user-select: none; display: flex; justify-content: space-between;
   }
-  #settings-title .toggle { font-size: 10px; }
-  #settings-body {
-    padding: 8px;
-    display: none;
-  }
+  #settings-body { padding: 8px; display: none; }
   #settings-body.open { display: block; }
-  .setting-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    font-size: 13px;
-  }
-  .setting-row:last-child { margin-bottom: 0; }
-  .setting-row label { min-width: 80px; font-weight: bold; }
+  .setting-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 13px; }
+  .setting-row label { min-width: 70px; font-weight: bold; }
   .setting-row input, .setting-row select {
-    flex: 1;
-    padding: 4px 6px;
-    font-size: 13px;
-    border: 2px inset #808080;
-    font-family: inherit;
+    flex: 1; padding: 3px 6px; font-size: 13px; border: 2px inset #808080; font-family: inherit;
   }
-  .setting-row select { cursor: pointer; }
-  #save-settings {
-    padding: 4px 14px;
-    font-size: 13px;
-    background: #c0c0c0;
-    border: 2px outset #fff;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  #save-settings:active { border: 2px inset #808080; }
-  .status-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-left: 8px;
-  }
-  .status-dot.ok { background: #0a0; }
-  .status-dot.err { background: #c00; }
-  .status-dot.none { background: #888; }
+  .sm-btn { padding: 3px 12px; font-size: 12px; background: #c0c0c0; border: 2px outset #fff; cursor: pointer; }
+  .sm-btn:active { border: 2px inset #808080; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-left: 6px; }
+  .status-dot.ok { background: #0a0; } .status-dot.err { background: #c00; } .status-dot.none { background: #888; }
 
-  /* Chat window */
+  /* History sidebar */
+  #history-panel {
+    display: none; width: 720px; max-width: 95vw; background: #c0c0c0;
+    border: 2px outset #fff; box-shadow: 2px 2px 0 #000; margin-bottom: 4px;
+  }
+  #history-panel.open { display: block; }
+  .hist-title {
+    background: linear-gradient(90deg, #000080, #1084d0);
+    color: #fff; font-weight: bold; font-size: 13px; padding: 3px 8px;
+  }
+  #history-list { max-height: 200px; overflow-y: auto; padding: 4px; }
+  .hist-item {
+    padding: 5px 8px; margin: 2px 0; background: #fff; border: 1px solid #999;
+    cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .hist-item:hover { background: #e0e0ff; }
+  .hist-item.active { background: #ccccff; font-weight: bold; }
+  .hist-item .hist-delete { color: #c00; cursor: pointer; font-weight: bold; margin-left: 8px; }
+
+  /* Main chat window */
   #chat-window {
-    width: 650px;
-    max-width: 95vw;
-    background: #c0c0c0;
-    border: 2px outset #fff;
-    box-shadow: 4px 4px 0 #000;
+    width: 720px; max-width: 95vw; min-width: 400px; min-height: 400px;
+    background: #c0c0c0; border: 2px outset #fff; box-shadow: 4px 4px 0 #000;
+    resize: both; overflow: hidden; display: flex; flex-direction: column;
   }
   #title-bar {
     background: linear-gradient(90deg, #000080, #1084d0);
-    color: #fff;
-    font-weight: bold;
-    font-size: 14px;
-    padding: 4px 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    color: #fff; font-weight: bold; font-size: 14px; padding: 4px 8px;
+    display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
   }
   #title-bar .btn-group span {
-    display: inline-block;
-    width: 16px; height: 14px;
-    background: #c0c0c0;
-    border: 1px outset #fff;
-    text-align: center;
-    font-size: 10px;
-    line-height: 14px;
-    margin-left: 2px;
-    cursor: default;
+    display: inline-block; width: 16px; height: 14px; background: #c0c0c0;
+    border: 1px outset #fff; text-align: center; font-size: 10px; line-height: 14px;
+    margin-left: 2px; cursor: default;
   }
   #chat-log {
-    height: 500px;
-    overflow-y: auto;
-    padding: 10px;
-    background: #fff;
-    border: 2px inset #808080;
-    margin: 6px;
-    font-size: 14px;
+    flex: 1; overflow-y: auto; padding: 10px; background: #fff;
+    border: 2px inset #808080; margin: 6px; font-size: 14px;
   }
-  .msg {
-    margin-bottom: 10px;
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-  }
+  .msg { margin-bottom: 10px; display: flex; gap: 8px; align-items: flex-start; }
   .msg.user { justify-content: flex-end; }
   .msg.clippy { justify-content: flex-start; }
   .msg .bubble {
-    max-width: 75%;
-    padding: 8px 12px;
-    border-radius: 6px;
-    line-height: 1.5;
-    word-wrap: break-word;
-    white-space: pre-wrap;
+    max-width: 75%; padding: 8px 12px; border-radius: 6px; line-height: 1.5;
+    word-wrap: break-word; white-space: pre-wrap; position: relative;
   }
-  .msg.user .bubble {
-    background: #dcf8c6;
-    border: 1px solid #b5d89e;
+  .msg.user .bubble { background: #dcf8c6; border: 1px solid #b5d89e; }
+  .msg.clippy .bubble { background: #ffffcc; border: 1px solid #e0e0a0; }
+  .msg .avatar { font-size: 22px; flex-shrink: 0; }
+  .msg-actions {
+    display: none; position: absolute; top: -20px; right: 4px;
+    gap: 2px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; padding: 1px 3px;
   }
-  .msg.clippy .bubble {
-    background: #ffffcc;
-    border: 1px solid #e0e0a0;
+  .msg:hover .msg-actions { display: flex; }
+  .msg-action-btn {
+    background: none; border: none; cursor: pointer; font-size: 13px; padding: 1px 4px;
+    opacity: 0.6; title: '';
   }
-  .msg .avatar { font-size: 24px; flex-shrink: 0; }
-  #input-area {
-    display: flex;
-    padding: 6px;
-    gap: 4px;
+  .msg-action-btn:hover { opacity: 1; }
+
+  /* File attachment */
+  .file-badge {
+    display: inline-block; background: #e8e8ff; border: 1px solid #aaa;
+    padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-bottom: 4px;
   }
+
+  /* Input area */
+  #input-area { display: flex; padding: 6px; gap: 4px; flex-shrink: 0; align-items: center; }
   #question {
-    flex: 1;
-    padding: 6px 8px;
-    font-size: 14px;
-    border: 2px inset #808080;
-    font-family: inherit;
+    flex: 1; padding: 6px 8px; font-size: 14px; border: 2px inset #808080; font-family: inherit;
   }
   #ask-btn {
-    padding: 6px 16px;
-    font-size: 14px;
-    background: #c0c0c0;
-    border: 2px outset #fff;
-    cursor: pointer;
-    font-weight: bold;
+    padding: 6px 14px; font-size: 14px; background: #c0c0c0;
+    border: 2px outset #fff; cursor: pointer; font-weight: bold;
   }
   #ask-btn:active { border: 2px inset #808080; }
   #ask-btn:disabled { color: #888; cursor: default; }
-  #status {
-    padding: 4px 8px;
-    font-size: 12px;
-    color: #444;
-    border-top: 1px solid #808080;
+  .icon-btn {
+    width: 32px; height: 32px; background: #c0c0c0; border: 2px outset #fff;
+    cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;
   }
+  .icon-btn:active { border: 2px inset #808080; }
+  #file-input { display: none; }
+  #file-label { background: #ffe; border: 1px solid #cc9; padding: 2px 6px; font-size: 11px; border-radius: 3px; display: none; }
+
+  #status { padding: 3px 8px; font-size: 12px; color: #444; border-top: 1px solid #808080; flex-shrink: 0; }
   .typing-indicator { color: #888; font-style: italic; }
+
+  /* Toast notification */
+  #toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: #333; color: #fff; padding: 8px 20px; border-radius: 6px;
+    font-size: 14px; display: none; z-index: 9999;
+  }
 </style>
 </head>
 <body>
 
 <h1>📎 Clippy AI Assistant</h1>
 
-<!-- Settings panel -->
+<!-- Toolbar -->
+<div id="toolbar">
+  <button class="tb-btn" onclick="toggleSettings()" title="Configure AI provider">⚙️ Settings</button>
+  <button class="tb-btn" onclick="toggleHistory()" title="Chat history">📜 History</button>
+  <button class="tb-btn" onclick="newChat()" title="Start new chat">➕ New Chat</button>
+  <button class="tb-btn" onclick="downloadChat()" title="Download chat as text">💾 Download</button>
+  <button class="tb-btn" onclick="shareChat()" title="Copy shareable link">🔗 Share</button>
+  <button class="tb-btn" onclick="toggleSound()" id="sound-btn" title="Toggle sounds">🔊 Sound</button>
+</div>
+
+<!-- Settings -->
 <div id="settings-bar">
   <div id="settings-title" onclick="toggleSettings()">
-    <span>⚙️ AI Settings</span>
-    <span class="toggle" id="settings-toggle">▼ click to configure</span>
+    <span>⚙️ AI Settings</span><span id="settings-toggle">▼</span>
   </div>
   <div id="settings-body">
     <div class="setting-row">
@@ -200,7 +175,7 @@
         <option value="groq" selected>Groq (Free)</option>
         <option value="openai">OpenAI</option>
         <option value="gemini">Google Gemini (Free)</option>
-        <option value="custom">Custom (LM Studio / Ollama / other)</option>
+        <option value="custom">Custom (LM Studio / Ollama)</option>
       </select>
     </div>
     <div class="setting-row">
@@ -209,7 +184,7 @@
     </div>
     <div class="setting-row">
       <label>API Key:</label>
-      <input type="password" id="api-key" placeholder="gsk_...  (get free key at console.groq.com)">
+      <input type="password" id="api-key" placeholder="gsk_...  (free at console.groq.com)">
     </div>
     <div class="setting-row">
       <label>Model:</label>
@@ -217,40 +192,92 @@
     </div>
     <div class="setting-row">
       <label></label>
-      <span style="font-size:12px; color:#333;">🆓 Get a free Groq key: <a href="https://console.groq.com/keys" target="_blank" style="color:#000080;">console.groq.com/keys</a></span>
+      <span style="font-size:12px;color:#333;">🆓 Free key: <a href="https://console.groq.com/keys" target="_blank" style="color:#000080;">console.groq.com/keys</a></span>
     </div>
     <div class="setting-row">
       <label></label>
-      <button id="save-settings" onclick="saveSettings()">💾 Save Settings</button>
-      <span id="conn-dot" class="status-dot none" title="Not tested"></span>
-      <span id="conn-text" style="font-size:12px; color:#444;">Not configured</span>
+      <button class="sm-btn" onclick="saveSettings()">💾 Save</button>
+      <span id="conn-dot" class="status-dot none"></span>
+      <span id="conn-text" style="font-size:12px;color:#444;">Not configured</span>
     </div>
   </div>
+</div>
+
+<!-- History panel -->
+<div id="history-panel">
+  <div class="hist-title">📜 Chat History (last 10)</div>
+  <div id="history-list"></div>
 </div>
 
 <!-- Chat window -->
 <div id="chat-window">
   <div id="title-bar">
-    <span>Clippy AI Assistant</span>
-    <div class="btn-group">
-      <span>_</span><span>□</span><span>×</span>
-    </div>
+    <span id="chat-title">Clippy AI Assistant</span>
+    <div class="btn-group"><span>_</span><span>□</span><span>×</span></div>
   </div>
   <div id="chat-log"></div>
+  <div id="file-label">📄 <span id="file-name"></span> <span style="cursor:pointer;color:#c00;" onclick="clearFile()">✕</span></div>
   <div id="input-area">
+    <button class="icon-btn" onclick="document.getElementById('file-input').click()" title="Attach file">📎</button>
+    <input type="file" id="file-input" onchange="onFileSelect(event)">
     <input type="text" id="question" placeholder="Ask Clippy anything..." autocomplete="off">
-    <button id="ask-btn">Ask</button>
+    <button id="ask-btn" onclick="askClippy()">Ask</button>
   </div>
   <div id="status">Ready</div>
 </div>
 
+<div id="toast"></div>
+
 <script>
+// ==================== SOUND ENGINE ====================
+var soundEnabled = true;
+var audioCtx = null;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(freq, duration, type, vol) {
+  if (!soundEnabled) return;
+  try {
+    var ctx = getAudioCtx();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    gain.gain.value = vol || 0.15;
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + duration);
+  } catch(e) {}
+}
+
+function sndStartup() { playTone(523, 0.15, 'sine'); setTimeout(function(){playTone(659, 0.15, 'sine');}, 150); setTimeout(function(){playTone(784, 0.3, 'sine');}, 300); }
+function sndSend() { playTone(880, 0.08, 'square', 0.08); setTimeout(function(){playTone(1100, 0.08, 'square', 0.08);}, 80); }
+function sndReceive() { playTone(660, 0.1, 'sine', 0.12); setTimeout(function(){playTone(880, 0.15, 'sine', 0.12);}, 100); setTimeout(function(){playTone(1047, 0.2, 'sine', 0.1);}, 220); }
+function sndClick() { playTone(1000, 0.04, 'square', 0.06); }
+function sndError() { playTone(300, 0.15, 'sawtooth', 0.1); setTimeout(function(){playTone(200, 0.3, 'sawtooth', 0.1);}, 150); }
+function sndFile() { playTone(500, 0.08, 'triangle', 0.1); setTimeout(function(){playTone(700, 0.08, 'triangle', 0.1);}, 100); }
+function sndCopy() { playTone(1200, 0.06, 'sine', 0.08); }
+function sndNewChat() { playTone(440, 0.1, 'sine', 0.1); setTimeout(function(){playTone(660, 0.1, 'sine', 0.1);}, 120); setTimeout(function(){playTone(880, 0.15, 'sine', 0.1);}, 240); }
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  document.getElementById('sound-btn').textContent = soundEnabled ? '🔊 Sound' : '🔇 Mute';
+  if (soundEnabled) sndClick();
+  showToast(soundEnabled ? 'Sound ON' : 'Sound OFF');
+}
+
+// ==================== GLOBALS ====================
 var agentRef = null;
-var conversationHistory = [];
 var isProcessing = false;
+var attachedFile = null; // { name, content }
+var chatSessions = []; // array of { id, title, messages, date }
+var currentSessionId = null;
 
 var SYSTEM_PROMPT = "You are Clippy, the legendary Microsoft Office Assistant paperclip from the late 1990s. " +
-  "You now have the knowledge of a modern AI but you ALWAYS stay in character as Clippy. " +
+  "You now have the knowledge of a modern AI but you ALWAYS stay in character as Clippy.\n" +
   "Rules:\n" +
   "- Start responses with a classic Clippy-style remark when it fits (e.g., 'It looks like you\\'re trying to...')\n" +
   "- Use paperclip emoji 📎 occasionally\n" +
@@ -259,35 +286,40 @@ var SYSTEM_PROMPT = "You are Clippy, the legendary Microsoft Office Assistant pa
   "- Reference 90s computing and your own history when relevant\n" +
   "- Keep answers concise but thorough (2-4 paragraphs max unless asked for detail)\n" +
   "- You can answer ANY question on ANY topic — you are a full AI assistant wearing a Clippy costume\n" +
-  "- If someone asks about your history, be honest: you were introduced in Office 97, retired in Office 2007, " +
-  "and now you\\'re back, powered by modern AI";
+  "- If the user attaches a file, analyze its contents helpfully\n" +
+  "- If someone asks about your history, be honest: you were introduced in Office 97, retired in Office 2007, and now you\\'re back, powered by modern AI";
 
-// --- Settings ---
+// ==================== TOAST ====================
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(function() { t.style.display = 'none'; }, 2000);
+}
+
+// ==================== SETTINGS ====================
 function toggleSettings() {
+  sndClick();
   var body = document.getElementById('settings-body');
-  var toggle = document.getElementById('settings-toggle');
   body.classList.toggle('open');
-  toggle.textContent = body.classList.contains('open') ? '▲ hide' : '▼ click to configure';
+  document.getElementById('settings-toggle').textContent = body.classList.contains('open') ? '▲' : '▼';
 }
 
 function onProviderChange() {
   var prov = document.getElementById('provider').value;
-  var urlInput = document.getElementById('api-url');
-  var keyInput = document.getElementById('api-key');
-  var modelInput = document.getElementById('model');
   var providers = {
-    groq:   { url: 'https://api.groq.com/openai/v1/chat/completions',   model: 'llama-3.3-70b-versatile', ph: 'gsk_...  (get free key at console.groq.com)' },
+    groq:   { url: 'https://api.groq.com/openai/v1/chat/completions',   model: 'llama-3.3-70b-versatile', ph: 'gsk_...  (free at console.groq.com)' },
     openai: { url: 'https://api.openai.com/v1/chat/completions',        model: 'gpt-4o-mini',             ph: 'sk-...' },
-    gemini: { url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', model: 'gemini-2.0-flash', ph: 'AIza...  (get free key at aistudio.google.com)' },
+    gemini: { url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', model: 'gemini-2.0-flash', ph: 'AIza...  (free at aistudio.google.com)' },
     custom: { url: 'http://localhost:1234/v1/chat/completions',          model: 'local-model',             ph: '(optional for local)' }
   };
   var p = providers[prov] || providers.custom;
-  urlInput.value = p.url;
-  modelInput.value = p.model;
-  keyInput.placeholder = p.ph;
+  document.getElementById('api-url').value = p.url;
+  document.getElementById('model').value = p.model;
+  document.getElementById('api-key').placeholder = p.ph;
 }
 
 function saveSettings() {
+  sndClick();
   var cfg = {
     provider: document.getElementById('provider').value,
     apiUrl: document.getElementById('api-url').value.trim(),
@@ -301,27 +333,19 @@ function saveSettings() {
 
 function loadSettings() {
   var raw = localStorage.getItem('clippy_ai_config');
-  if (!raw) {
-    // First time — open settings
-    setTimeout(function() {
-      document.getElementById('settings-body').classList.add('open');
-      document.getElementById('settings-toggle').textContent = '▲ hide';
-    }, 500);
-    return null;
-  }
+  if (!raw) { setTimeout(function() { toggleSettings(); }, 500); return null; }
   var cfg = JSON.parse(raw);
-  document.getElementById('provider').value = cfg.provider || 'openai';
+  document.getElementById('provider').value = cfg.provider || 'groq';
   document.getElementById('api-url').value = cfg.apiUrl || '';
   document.getElementById('api-key').value = cfg.apiKey || '';
-  document.getElementById('model').value = cfg.model || 'gpt-4o-mini';
+  document.getElementById('model').value = cfg.model || 'llama-3.3-70b-versatile';
   setConnStatus('ok', 'Configured');
   return cfg;
 }
 
 function getConfig() {
   var raw = localStorage.getItem('clippy_ai_config');
-  if (!raw) return null;
-  return JSON.parse(raw);
+  return raw ? JSON.parse(raw) : null;
 }
 
 function setConnStatus(type, text) {
@@ -329,66 +353,238 @@ function setConnStatus(type, text) {
   document.getElementById('conn-text').textContent = text;
 }
 
-// --- Chat ---
-function addMessage(text, sender) {
+// ==================== FILE UPLOAD ====================
+function onFileSelect(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  sndFile();
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var content = ev.target.result;
+    if (file.size > 100000) content = content.substring(0, 100000) + '\n\n[... file truncated at 100KB ...]';
+    attachedFile = { name: file.name, content: content };
+    document.getElementById('file-name').textContent = file.name;
+    document.getElementById('file-label').style.display = 'inline-block';
+  };
+  reader.readAsText(file);
+}
+
+function clearFile() {
+  attachedFile = null;
+  document.getElementById('file-input').value = '';
+  document.getElementById('file-label').style.display = 'none';
+}
+
+// ==================== CHAT SESSION MANAGEMENT ====================
+function loadSessions() {
+  var raw = localStorage.getItem('clippy_sessions');
+  chatSessions = raw ? JSON.parse(raw) : [];
+}
+
+function saveSessions() {
+  // Keep only last 10
+  if (chatSessions.length > 10) chatSessions = chatSessions.slice(chatSessions.length - 10);
+  localStorage.setItem('clippy_sessions', JSON.stringify(chatSessions));
+}
+
+function getCurrentSession() {
+  return chatSessions.find(function(s) { return s.id === currentSessionId; });
+}
+
+function newChat() {
+  sndNewChat();
+  var id = 'chat_' + Date.now();
+  var session = { id: id, title: 'New Chat', messages: [], date: new Date().toLocaleString() };
+  chatSessions.push(session);
+  currentSessionId = id;
+  saveSessions();
+  document.getElementById('chat-log').innerHTML = '';
+  document.getElementById('chat-title').textContent = 'Clippy AI Assistant — New Chat';
+  renderHistory();
+  if (agentRef) { agentRef.stop(); agentRef.play('Wave'); agentRef.speak("New chat! What can I help with? 📎"); }
+  addMessage("New chat started! Ask me anything. 📎", 'clippy');
+}
+
+function loadChat(id) {
+  sndClick();
+  currentSessionId = id;
+  var session = getCurrentSession();
+  if (!session) return;
+  document.getElementById('chat-log').innerHTML = '';
+  document.getElementById('chat-title').textContent = 'Clippy AI Assistant — ' + session.title;
+  session.messages.forEach(function(m) { addMessageDirect(m.text, m.sender); });
+  renderHistory();
+}
+
+function deleteChat(id) {
+  sndClick();
+  chatSessions = chatSessions.filter(function(s) { return s.id !== id; });
+  saveSessions();
+  if (id === currentSessionId) newChat();
+  else renderHistory();
+}
+
+function toggleHistory() {
+  sndClick();
+  var panel = document.getElementById('history-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) renderHistory();
+}
+
+function renderHistory() {
+  var list = document.getElementById('history-list');
+  list.innerHTML = '';
+  if (chatSessions.length === 0) { list.innerHTML = '<div style="padding:8px;color:#666;font-size:13px;">No chat history yet.</div>'; return; }
+  chatSessions.slice().reverse().forEach(function(s) {
+    var div = document.createElement('div');
+    div.className = 'hist-item' + (s.id === currentSessionId ? ' active' : '');
+    div.innerHTML = '<span onclick="loadChat(\'' + s.id + '\')" style="flex:1;cursor:pointer;">' +
+      '💬 ' + escapeHtml(s.title) + ' <span style="color:#888;font-size:11px;">(' + s.date + ')</span></span>' +
+      '<span class="hist-delete" onclick="event.stopPropagation();deleteChat(\'' + s.id + '\')" title="Delete">✕</span>';
+    list.appendChild(div);
+  });
+}
+
+// ==================== CHAT MESSAGES ====================
+function escapeHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function addMessageDirect(text, sender) {
   var log = document.getElementById('chat-log');
   var div = document.createElement('div');
   div.className = 'msg ' + sender;
-  var escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  var escaped = escapeHtml(text);
+  var actions = '<div class="msg-actions">' +
+    '<button class="msg-action-btn" onclick="copyText(this)" title="Copy">📋</button>' +
+    '<button class="msg-action-btn" onclick="downloadSingle(this)" title="Download">💾</button>' +
+    '</div>';
   if (sender === 'clippy') {
-    div.innerHTML = '<span class="avatar">📎</span><div class="bubble">' + escaped + '</div>';
+    div.innerHTML = '<span class="avatar">📎</span><div class="bubble">' + actions + escaped + '</div>';
   } else {
-    div.innerHTML = '<div class="bubble">' + escaped + '</div><span class="avatar">🧑</span>';
+    div.innerHTML = '<div class="bubble">' + actions + escaped + '</div><span class="avatar">🧑</span>';
   }
+  div.dataset.text = text;
   log.appendChild(div);
   log.scrollTop = log.scrollHeight;
 }
 
-async function callAI(question) {
-  var cfg = getConfig();
-  if (!cfg || !cfg.apiUrl) {
-    return "⚙️ Please configure your AI settings first! Click the settings bar above and enter your API key.";
-  }
-
-  conversationHistory.push({ role: "user", content: question });
-
-  var messages = [{ role: "system", content: SYSTEM_PROMPT }].concat(conversationHistory.slice(-20));
-
-  var headers = { "Content-Type": "application/json" };
-  if (cfg.apiKey) {
-    headers["Authorization"] = "Bearer " + cfg.apiKey;
-  }
-
-  try {
-    var resp = await fetch(cfg.apiUrl, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        model: cfg.model,
-        messages: messages,
-        max_tokens: 1024,
-        temperature: 0.8
-      })
-    });
-
-    if (!resp.ok) {
-      var errText = await resp.text();
-      setConnStatus('err', 'API error ' + resp.status);
-      return "📎 Oops! I got an error from the AI service (HTTP " + resp.status + "). Check your API key and settings!\n\n" + errText;
+function addMessage(text, sender) {
+  addMessageDirect(text, sender);
+  var session = getCurrentSession();
+  if (session) {
+    session.messages.push({ text: text, sender: sender });
+    // Update title from first user message
+    if (sender === 'user' && session.title === 'New Chat') {
+      session.title = text.length > 40 ? text.substring(0, 37) + '...' : text;
+      document.getElementById('chat-title').textContent = 'Clippy AI Assistant — ' + session.title;
+      renderHistory();
     }
-
-    var data = await resp.json();
-    var answer = data.choices[0].message.content;
-    conversationHistory.push({ role: "assistant", content: answer });
-    setConnStatus('ok', 'Connected');
-    return answer;
-
-  } catch (err) {
-    setConnStatus('err', 'Connection failed');
-    return "📎 I couldn't reach the AI service! Make sure the API URL is correct and the service is running.\n\nError: " + err.message;
+    saveSessions();
   }
 }
 
+// ==================== COPY / DOWNLOAD / SHARE ====================
+function copyText(btn) {
+  sndCopy();
+  var msg = btn.closest('.msg');
+  var text = msg.dataset.text;
+  navigator.clipboard.writeText(text).then(function() { showToast('📋 Copied!'); });
+}
+
+function downloadSingle(btn) {
+  sndClick();
+  var msg = btn.closest('.msg');
+  var text = msg.dataset.text;
+  downloadFile('clippy_answer.txt', text);
+}
+
+function downloadChat() {
+  sndClick();
+  var session = getCurrentSession();
+  if (!session || session.messages.length === 0) { showToast('No messages to download'); return; }
+  var text = '📎 Clippy AI Chat — ' + session.date + '\n' + '='.repeat(50) + '\n\n';
+  session.messages.forEach(function(m) {
+    text += (m.sender === 'user' ? '🧑 You' : '📎 Clippy') + ':\n' + m.text + '\n\n';
+  });
+  downloadFile('clippy_chat_' + session.id + '.txt', text);
+  showToast('💾 Chat downloaded!');
+}
+
+function downloadFile(name, content) {
+  var blob = new Blob([content], { type: 'text/plain' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function shareChat() {
+  sndClick();
+  var session = getCurrentSession();
+  if (!session || session.messages.length === 0) { showToast('No messages to share'); return; }
+  var data = { title: session.title, date: session.date, messages: session.messages.slice(-10) };
+  var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  var url = window.location.origin + window.location.pathname + '#shared=' + encoded;
+  navigator.clipboard.writeText(url).then(function() { showToast('🔗 Shareable link copied!'); });
+}
+
+function checkSharedLink() {
+  if (window.location.hash.indexOf('#shared=') !== 0) return;
+  try {
+    var encoded = window.location.hash.substring(8);
+    var data = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+    var id = 'shared_' + Date.now();
+    var session = { id: id, title: '📥 ' + data.title, messages: data.messages, date: data.date };
+    chatSessions.push(session);
+    saveSessions();
+    loadChat(id);
+    showToast('📥 Shared chat loaded!');
+    window.location.hash = '';
+  } catch(e) {}
+}
+
+// ==================== AI CALL ====================
+async function callAI(question) {
+  var cfg = getConfig();
+  if (!cfg || !cfg.apiUrl) return "⚙️ Please configure your AI settings first! Click Settings above.";
+
+  var session = getCurrentSession();
+  var history = session ? session.messages.filter(function(m) { return m.sender !== 'system'; }).slice(-20).map(function(m) {
+    return { role: m.sender === 'user' ? 'user' : 'assistant', content: m.text };
+  }) : [];
+
+  var userContent = question;
+  if (attachedFile) {
+    userContent += '\n\n[Attached file: ' + attachedFile.name + ']\n```\n' + attachedFile.content + '\n```';
+  }
+  history.push({ role: 'user', content: userContent });
+
+  var messages = [{ role: 'system', content: SYSTEM_PROMPT }].concat(history);
+  var headers = { 'Content-Type': 'application/json' };
+  if (cfg.apiKey) headers['Authorization'] = 'Bearer ' + cfg.apiKey;
+
+  try {
+    var resp = await fetch(cfg.apiUrl, {
+      method: 'POST', headers: headers,
+      body: JSON.stringify({ model: cfg.model, messages: messages, max_tokens: 1024, temperature: 0.8 })
+    });
+    if (!resp.ok) {
+      sndError();
+      var errText = await resp.text();
+      setConnStatus('err', 'API error ' + resp.status);
+      return "📎 Oops! Error from AI (HTTP " + resp.status + "). Check your settings!\n\n" + errText;
+    }
+    var data = await resp.json();
+    setConnStatus('ok', 'Connected');
+    return data.choices[0].message.content;
+  } catch (err) {
+    sndError();
+    setConnStatus('err', 'Connection failed');
+    return "📎 Couldn't reach the AI service!\n\nError: " + err.message;
+  }
+}
+
+// ==================== ASK CLIPPY ====================
 async function askClippy() {
   if (isProcessing) return;
   var input = document.getElementById('question');
@@ -397,19 +593,21 @@ async function askClippy() {
 
   isProcessing = true;
   document.getElementById('ask-btn').disabled = true;
-  addMessage(q, 'user');
+  sndSend();
+
+  var displayQ = q;
+  if (attachedFile) displayQ = '📄 [' + attachedFile.name + ']\n' + q;
+  addMessage(displayQ, 'user');
   input.value = '';
 
   document.getElementById('status').innerHTML = '<span class="typing-indicator">📎 Clippy is thinking...</span>';
-
-  if (agentRef) {
-    agentRef.stop();
-    agentRef.play('Thinking');
-  }
+  if (agentRef) { agentRef.stop(); agentRef.play('Thinking'); }
 
   var answer = await callAI(q);
+  sndReceive();
 
   addMessage(answer, 'clippy');
+  clearFile();
   document.getElementById('status').textContent = 'Ready';
   isProcessing = false;
   document.getElementById('ask-btn').disabled = false;
@@ -417,34 +615,49 @@ async function askClippy() {
 
   if (agentRef) {
     agentRef.stop();
-    var anims = ['Explain', 'GetAttention', 'Wave', 'CheckingSomething'];
+    var anims = ['Explain', 'GetAttention', 'Wave', 'CheckingSomething', 'Congratulate', 'Print'];
     agentRef.play(anims[Math.floor(Math.random() * anims.length)]);
-    // Show a short excerpt in Clippy's speech bubble
     var short = answer.length > 120 ? answer.substring(0, 117) + '...' : answer;
     agentRef.speak(short);
   }
 }
 
-document.getElementById('ask-btn').addEventListener('click', askClippy);
-document.getElementById('question').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') askClippy();
-});
+// ==================== CLIPPY IDLE ANIMATIONS ====================
+function idleAnimation() {
+  if (!agentRef || isProcessing) return;
+  var anims = ['IdleRopePile', 'IdleAtom', 'IdleFinger', 'IdleHeadScratch', 'IdleSnooze', 'Wave', 'GetArtsy'];
+  agentRef.play(anims[Math.floor(Math.random() * anims.length)]);
+}
+setInterval(idleAnimation, 25000);
 
-// Load saved settings
+// ==================== INIT ====================
+document.getElementById('question').addEventListener('keydown', function(e) { if (e.key === 'Enter') askClippy(); });
+
 loadSettings();
+loadSessions();
+checkSharedLink();
 
-// Load Clippy agent
+// Start or resume session
+if (chatSessions.length > 0 && !currentSessionId) {
+  currentSessionId = chatSessions[chatSessions.length - 1].id;
+  loadChat(currentSessionId);
+} else if (chatSessions.length === 0) {
+  newChat();
+}
+
 clippy.load('Clippy', function(agent) {
   agentRef = agent;
   agent.show();
+  sndStartup();
   agent.play('Wave');
   var greeting = getConfig()
     ? "Hi! I'm Clippy, now powered by AI! 📎 Ask me anything!"
-    : "Hi! I'm Clippy! 📎 Configure your AI settings above, then ask me anything!";
+    : "Hi! Configure your AI settings above, then ask me anything! 📎";
   agent.speak(greeting);
-  addMessage(greeting, 'clippy');
+  if (getCurrentSession() && getCurrentSession().messages.length === 0) {
+    addMessage(greeting, 'clippy');
+  }
 });
 </script>
-
 </body>
 </html>
