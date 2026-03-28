@@ -207,6 +207,40 @@
     background: #333; color: #fff; padding: 8px 20px; border-radius: 6px;
     font-size: 14px; display: none; z-index: 9999;
   }
+
+  /* About dialog */
+  #about-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;
+  }
+  #about-overlay.open { display: flex; }
+  #about-box {
+    background: #c0c0c0; border: 2px outset #fff; box-shadow: 6px 6px 0 #000;
+    width: 420px; max-width: 90vw;
+  }
+  #about-titlebar {
+    background: linear-gradient(90deg, #000080, #1084d0);
+    color: #fff; font-weight: bold; font-size: 13px; padding: 4px 8px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  #about-titlebar .about-close {
+    width: 16px; height: 14px; background: #c0c0c0; border: 1px outset #fff;
+    text-align: center; font-size: 10px; line-height: 14px; cursor: pointer;
+  }
+  #about-content {
+    padding: 20px; text-align: center; font-size: 14px; line-height: 1.7;
+  }
+  #about-content .about-icon { font-size: 48px; margin-bottom: 8px; }
+  #about-content .about-title { font-size: 20px; font-weight: bold; margin-bottom: 4px; }
+  #about-content .about-version { color: #555; font-size: 12px; margin-bottom: 12px; }
+  #about-content .about-author { font-weight: bold; margin-bottom: 4px; }
+  #about-content .about-license { background: #fff; border: 2px inset #808080; padding: 10px; margin: 10px 0; font-size: 12px; text-align: left; }
+  #about-content a { color: #000080; }
+  #about-ok {
+    padding: 4px 24px; font-size: 13px; background: #c0c0c0;
+    border: 2px outset #fff; cursor: pointer; font-weight: bold; margin-top: 8px;
+  }
+  #about-ok:active { border: 2px inset #808080; }
 </style>
 </head>
 <body>
@@ -223,6 +257,7 @@
   <button class="tb-btn" onclick="shareChat()" title="Copy shareable link">🔗 Share</button>
   <button class="tb-btn" onclick="toggleSound()" id="sound-btn" title="Toggle sounds">🔊 Sound</button>
   <button class="tb-btn" onclick="toggleLang()" id="lang-btn" title="Switch language">🇮🇱 עברית</button>
+  <button class="tb-btn" onclick="showAbout()" title="About">ℹ️ About</button>
 </div>
 
 <!-- Settings -->
@@ -326,6 +361,32 @@
   </div>
 </div>
 
+<!-- About dialog -->
+<div id="about-overlay" onclick="if(event.target===this)closeAbout()">
+  <div id="about-box">
+    <div id="about-titlebar">
+      <span>About Clippy AI Assistant</span>
+      <span class="about-close" onclick="closeAbout()">×</span>
+    </div>
+    <div id="about-content">
+      <div class="about-icon">📎</div>
+      <div class="about-title">Clippy AI Assistant</div>
+      <div class="about-version">Version 1.0.0</div>
+      <div class="about-author">Developed by Daniel Liezrowice © 2026</div>
+      <div>The legendary Microsoft Office paperclip — now powered by modern AI</div>
+      <div class="about-license">
+        <strong>MIT License</strong><br><br>
+        Permission is hereby granted, free of charge, to any person obtaining a copy of this software, to deal in the Software without restriction, including the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies.<br><br>
+        <strong>Feel free to improve, fork, and contribute! 🚀</strong>
+      </div>
+      <div style="font-size:12px; margin-top:6px;">
+        GitHub: <a href="https://github.com/zuwasi/Clippy-AI" target="_blank">github.com/zuwasi/Clippy-AI</a>
+      </div>
+      <button id="about-ok" onclick="closeAbout()">OK</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -367,6 +428,18 @@ function toggleSound() {
   document.getElementById('sound-btn').textContent = soundEnabled ? '🔊 Sound' : '🔇 Mute';
   if (soundEnabled) sndClick();
   showToast(soundEnabled ? 'Sound ON' : 'Sound OFF');
+}
+
+// ==================== ABOUT ====================
+function showAbout() {
+  sndClick();
+  document.getElementById('about-overlay').classList.add('open');
+  clippyAnimate('wave', 2000);
+  clippySay("That's me! Made with ❤️ by Daniel! 📎", 3000);
+}
+function closeAbout() {
+  sndClick();
+  document.getElementById('about-overlay').classList.remove('open');
 }
 
 // ==================== CLIPPY ANIMATION CONTROLLER ====================
