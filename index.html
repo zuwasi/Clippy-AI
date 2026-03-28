@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Clippy AI Assistant</title>
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-<script src="https://www.smore.com/clippy-js/clippy.min.js"></script>
-<link rel="stylesheet" href="https://www.smore.com/clippy-js/clippy.css">
+
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -141,6 +139,53 @@
   #status { padding: 3px 8px; font-size: 12px; color: #444; border-top: 1px solid #808080; flex-shrink: 0; }
   .typing-indicator { color: #888; font-style: italic; }
 
+  /* Clippy character panel */
+  #clippy-panel {
+    position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  #clippy-speech {
+    background: #ffffcc; border: 2px solid #999; border-radius: 10px;
+    padding: 8px 12px; font-size: 13px; max-width: 220px; text-align: center;
+    position: relative; box-shadow: 2px 2px 4px rgba(0,0,0,0.2); display: none;
+    word-wrap: break-word;
+  }
+  #clippy-speech:after {
+    content: ''; position: absolute; bottom: -10px; left: 50%;
+    margin-left: -6px; border-width: 10px 6px 0 6px;
+    border-style: solid; border-color: #999 transparent transparent transparent;
+  }
+  #clippy-speech.show { display: block; animation: fadeInBubble 0.3s ease; }
+  @keyframes fadeInBubble { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Clippy SVG character */
+  #clippy-char {
+    width: 100px; height: 130px; cursor: pointer; position: relative;
+    transition: transform 0.3s ease;
+  }
+  #clippy-char:hover { transform: scale(1.05); }
+
+  /* Animations */
+  #clippy-char.idle .clippy-body { animation: idleBounce 3s ease-in-out infinite; }
+  #clippy-char.wave .clippy-brow-l { animation: waveBrow 0.6s ease-in-out 3; }
+  #clippy-char.wave .clippy-eye-l { animation: waveEyeWink 0.6s ease-in-out 3; }
+  #clippy-char.think .clippy-eye-l, #clippy-char.think .clippy-eye-r { animation: thinkLook 1.5s ease-in-out infinite; }
+  #clippy-char.think .clippy-body { animation: thinkTilt 2s ease-in-out infinite; }
+  #clippy-char.happy .clippy-body { animation: happyBounce 0.4s ease 3; }
+  #clippy-char.happy .clippy-brow-l, #clippy-char.happy .clippy-brow-r { animation: happyBrows 0.4s ease 3; }
+  #clippy-char.talk .clippy-mouth { animation: talkMouth 0.3s ease-in-out 5; }
+  #clippy-char.entrance .clippy-body { animation: entranceSlide 0.8s ease-out; }
+
+  @keyframes idleBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  @keyframes waveBrow { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-20deg) translateY(-3px); } }
+  @keyframes waveEyeWink { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(0.1); } }
+  @keyframes thinkLook { 0%,100% { transform: translateX(0); } 50% { transform: translateX(3px); } }
+  @keyframes thinkTilt { 0%,100% { transform: rotate(0); } 50% { transform: rotate(5deg); } }
+  @keyframes happyBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes happyBrows { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  @keyframes talkMouth { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.8); } }
+  @keyframes entranceSlide { 0% { transform: translateY(80px) scale(0.5); opacity:0; } 100% { transform: translateY(0) scale(1); opacity:1; } }
+
   /* RTL / Hebrew support */
   body.rtl #chat-window, body.rtl #toolbar, body.rtl #settings-bar, body.rtl #history-panel { direction: rtl; }
   body.rtl .msg.user { flex-direction: row-reverse; }
@@ -243,6 +288,44 @@
   <div id="status">Ready</div>
 </div>
 
+<!-- Animated Clippy Character -->
+<div id="clippy-panel">
+  <div id="clippy-speech"></div>
+  <div id="clippy-char" class="entrance" onclick="clippyClick()">
+    <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
+      <g class="clippy-body">
+        <!-- Paperclip wire body -->
+        <path d="M 35 120 L 35 55 Q 35 20 55 20 Q 75 20 75 45 L 75 90 Q 75 108 60 108 Q 45 108 45 90 L 45 50"
+              fill="none" stroke="#a0a8b4" stroke-width="8" stroke-linecap="round"/>
+        <path d="M 35 120 L 35 55 Q 35 20 55 20 Q 75 20 75 45 L 75 90 Q 75 108 60 108 Q 45 108 45 90 L 45 50"
+              fill="none" stroke="#c8cdd4" stroke-width="5" stroke-linecap="round"/>
+        <!-- Shine line -->
+        <path d="M 38 80 L 38 60" fill="none" stroke="#e8ecf0" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+
+        <!-- Left eye -->
+        <g transform="translate(38, 38)">
+          <ellipse class="clippy-eye-l" cx="0" cy="0" rx="8" ry="9" fill="white" stroke="#888" stroke-width="1.5"/>
+          <circle cx="1" cy="1" r="4" fill="#333"/>
+          <circle cx="2.5" cy="-1" r="1.5" fill="white"/>
+        </g>
+        <!-- Right eye -->
+        <g transform="translate(62, 38)">
+          <ellipse class="clippy-eye-r" cx="0" cy="0" rx="8" ry="9" fill="white" stroke="#888" stroke-width="1.5"/>
+          <circle cx="1" cy="1" r="4" fill="#333"/>
+          <circle cx="2.5" cy="-1" r="1.5" fill="white"/>
+        </g>
+
+        <!-- Eyebrows -->
+        <line class="clippy-brow-l" x1="28" y1="26" x2="42" y2="28" stroke="#666" stroke-width="2.5" stroke-linecap="round"/>
+        <line class="clippy-brow-r" x1="56" y1="28" x2="70" y2="26" stroke="#666" stroke-width="2.5" stroke-linecap="round"/>
+
+        <!-- Mouth -->
+        <path class="clippy-mouth" d="M 40 52 Q 50 60 60 52" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -284,6 +367,42 @@ function toggleSound() {
   document.getElementById('sound-btn').textContent = soundEnabled ? '🔊 Sound' : '🔇 Mute';
   if (soundEnabled) sndClick();
   showToast(soundEnabled ? 'Sound ON' : 'Sound OFF');
+}
+
+// ==================== CLIPPY ANIMATION CONTROLLER ====================
+var clippySpeechTimer = null;
+
+function clippyAnimate(anim, duration) {
+  var el = document.getElementById('clippy-char');
+  el.className = anim;
+  if (duration) setTimeout(function() { el.className = 'idle'; }, duration);
+}
+
+function clippySay(text, duration) {
+  var bubble = document.getElementById('clippy-speech');
+  bubble.textContent = text;
+  bubble.classList.add('show');
+  clippyAnimate('talk', 1500);
+  clearTimeout(clippySpeechTimer);
+  clippySpeechTimer = setTimeout(function() {
+    bubble.classList.remove('show');
+    clippyAnimate('idle');
+  }, duration || 4000);
+}
+
+function clippyClick() {
+  sndClick();
+  var quips = [
+    "It looks like you're clicking on me! 📎",
+    "Need help? Just type a question!",
+    "I'm always here for you! 📎",
+    "Did you know I was born in 1997?",
+    "Click, click! That tickles! 📎",
+    "Try asking me something!",
+    "I see you noticed me! 👀📎"
+  ];
+  clippySay(quips[Math.floor(Math.random() * quips.length)], 3000);
+  clippyAnimate('happy', 1500);
 }
 
 // ==================== GLOBALS ====================
@@ -715,35 +834,43 @@ async function askClippy() {
   addMessage(displayQ, 'user');
   input.value = '';
 
-  document.getElementById('status').innerHTML = '<span class="typing-indicator">📎 Clippy is thinking...</span>';
-  if (agentRef) { agentRef.stop(); agentRef.play('Thinking'); }
+  document.getElementById('status').innerHTML = '<span class="typing-indicator">' + t('thinking') + '</span>';
+  clippyAnimate('think');
+  clippySay(t('thinking'), 30000);
 
   var answer = await callAI(q);
   sndReceive();
 
   addMessage(answer, 'clippy');
   clearFile();
-  document.getElementById('status').textContent = 'Ready';
+  document.getElementById('status').textContent = t('ready');
   isProcessing = false;
   document.getElementById('ask-btn').disabled = false;
   input.focus();
 
-  if (agentRef) {
-    agentRef.stop();
-    var anims = ['Explain', 'GetAttention', 'Wave', 'CheckingSomething', 'Congratulate', 'Print'];
-    agentRef.play(anims[Math.floor(Math.random() * anims.length)]);
-    var short = answer.length > 120 ? answer.substring(0, 117) + '...' : answer;
-    agentRef.speak(short);
-  }
+  // Show answer in Clippy speech bubble + happy animation
+  clippyAnimate('happy', 2000);
+  var short = answer.length > 140 ? answer.substring(0, 137) + '...' : answer;
+  clippySay(short, 6000);
 }
 
 // ==================== CLIPPY IDLE ANIMATIONS ====================
+var idleQuips = [
+  "I'm still here! 📎", "Need any help?", "Just ask! 📎",
+  "Don't mind me... 📎", "💤 zzz...", "Thinking about floppy disks...",
+  "Remember dial-up? 📎", "I miss the 90s...", "📎 *stretches*"
+];
+
 function idleAnimation() {
-  if (!agentRef || isProcessing) return;
-  var anims = ['IdleRopePile', 'IdleAtom', 'IdleFinger', 'IdleHeadScratch', 'IdleSnooze', 'Wave', 'GetArtsy'];
-  agentRef.play(anims[Math.floor(Math.random() * anims.length)]);
+  if (isProcessing) return;
+  var anims = ['idle', 'wave', 'think'];
+  clippyAnimate(anims[Math.floor(Math.random() * anims.length)], 4000);
+  // Occasionally say something
+  if (Math.random() < 0.4) {
+    clippySay(idleQuips[Math.floor(Math.random() * idleQuips.length)], 3000);
+  }
 }
-setInterval(idleAnimation, 25000);
+setInterval(idleAnimation, 20000);
 
 // ==================== INIT ====================
 document.getElementById('question').addEventListener('keydown', function(e) { if (e.key === 'Enter') askClippy(); });
@@ -761,17 +888,17 @@ if (chatSessions.length > 0 && !currentSessionId) {
   newChat();
 }
 
-clippy.load('Clippy', function(agent) {
-  agentRef = agent;
-  agent.show();
-  sndStartup();
-  agent.play('Wave');
+// Startup animation
+sndStartup();
+clippyAnimate('entrance');
+setTimeout(function() {
+  clippyAnimate('wave', 2000);
   var greeting = getConfig() ? t('greeting') : t('greetingSetup');
-  agent.speak(greeting);
+  clippySay(greeting, 5000);
   if (getCurrentSession() && getCurrentSession().messages.length === 0) {
     addMessage(greeting, 'clippy');
   }
-});
+}, 800);
 </script>
 </body>
 </html>
