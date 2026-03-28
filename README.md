@@ -54,6 +54,10 @@ Settings are saved in your browser's localStorage and persist between sessions.
 - **Ollama** — local models at `http://localhost:11434/v1/chat/completions`
 - **Any OpenAI-compatible API**
 
+## Contributing
+
+Want to add a new 90s nostalgia slogan? Submit a PR! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
 ## License
 
-MIT
+MIT — Developed by Daniel Liezrowice © 2026. Feel free to improve, fork, and contribute!
