@@ -16,6 +16,7 @@
       "output": "dist"
     },
     "win": {
+      "icon": "icon.ico",
       "target": [
         {
           "target": "nsis",
@@ -33,7 +34,9 @@
     "files": [
       "main.js",
       "index.html",
-      "package.json"
+      "package.json",
+      "icon.ico",
+      "icon.png"
     ]
   },
   "devDependencies": {
