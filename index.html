@@ -141,6 +141,21 @@
   #status { padding: 3px 8px; font-size: 12px; color: #444; border-top: 1px solid #808080; flex-shrink: 0; }
   .typing-indicator { color: #888; font-style: italic; }
 
+  /* RTL / Hebrew support */
+  body.rtl #chat-window, body.rtl #toolbar, body.rtl #settings-bar, body.rtl #history-panel { direction: rtl; }
+  body.rtl .msg.user { flex-direction: row-reverse; }
+  body.rtl .msg.clippy { flex-direction: row-reverse; }
+  body.rtl .msg .bubble { text-align: right; direction: rtl; unicode-bidi: plaintext; }
+  body.rtl #question { direction: rtl; text-align: right; }
+  body.rtl #input-area { flex-direction: row-reverse; }
+  body.rtl .setting-row { flex-direction: row-reverse; }
+  body.rtl .setting-row label { text-align: right; }
+  body.rtl .hist-item { flex-direction: row-reverse; }
+  body.rtl #status { text-align: right; direction: rtl; }
+  /* Auto-detect RTL per message bubble */
+  .bubble[dir="rtl"] { text-align: right; }
+  .bubble[dir="ltr"] { text-align: left; }
+
   /* Toast notification */
   #toast {
     position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
@@ -158,9 +173,11 @@
   <button class="tb-btn" onclick="toggleSettings()" title="Configure AI provider">⚙️ Settings</button>
   <button class="tb-btn" onclick="toggleHistory()" title="Chat history">📜 History</button>
   <button class="tb-btn" onclick="newChat()" title="Start new chat">➕ New Chat</button>
+  <button class="tb-btn" onclick="clearChat()" title="Clear current chat">🗑️ Clear</button>
   <button class="tb-btn" onclick="downloadChat()" title="Download chat as text">💾 Download</button>
   <button class="tb-btn" onclick="shareChat()" title="Copy shareable link">🔗 Share</button>
   <button class="tb-btn" onclick="toggleSound()" id="sound-btn" title="Toggle sounds">🔊 Sound</button>
+  <button class="tb-btn" onclick="toggleLang()" id="lang-btn" title="Switch language">🇮🇱 עברית</button>
 </div>
 
 <!-- Settings -->
@@ -275,8 +292,9 @@ var isProcessing = false;
 var attachedFile = null; // { name, content }
 var chatSessions = []; // array of { id, title, messages, date }
 var currentSessionId = null;
+var currentLang = localStorage.getItem('clippy_lang') || 'en';
 
-var SYSTEM_PROMPT = "You are Clippy, the legendary Microsoft Office Assistant paperclip from the late 1990s. " +
+var SYSTEM_PROMPT_EN = "You are Clippy, the legendary Microsoft Office Assistant paperclip from the late 1990s. " +
   "You now have the knowledge of a modern AI but you ALWAYS stay in character as Clippy.\n" +
   "Rules:\n" +
   "- Start responses with a classic Clippy-style remark when it fits (e.g., 'It looks like you\\'re trying to...')\n" +
@@ -288,6 +306,97 @@ var SYSTEM_PROMPT = "You are Clippy, the legendary Microsoft Office Assistant pa
   "- You can answer ANY question on ANY topic — you are a full AI assistant wearing a Clippy costume\n" +
   "- If the user attaches a file, analyze its contents helpfully\n" +
   "- If someone asks about your history, be honest: you were introduced in Office 97, retired in Office 2007, and now you\\'re back, powered by modern AI";
+
+var SYSTEM_PROMPT_HE = "אתה קליפי (Clippy), העוזר האגדי של Microsoft Office מסוף שנות ה-90. " +
+  "יש לך את הידע של בינה מלאכותית מודרנית אבל אתה תמיד נשאר בדמות של קליפי.\n" +
+  "כללים:\n" +
+  "- תמיד ענה בעברית\n" +
+  "- התחל תשובות עם הערה קלאסית בסגנון קליפי כשזה מתאים (למשל: 'נראה שאתה מנסה ל...')\n" +
+  "- השתמש באימוג'י מהדק 📎 מדי פעם\n" +
+  "- היה מועיל, בקיא ומדויק — אתה מופעל על ידי AI מודרני\n" +
+  "- שמור על אישיות שובבה, נוסטלגית ומודעת עצמית\n" +
+  "- התייחס למחשוב של שנות ה-90 ולהיסטוריה שלך כשזה רלוונטי\n" +
+  "- שמור על תשובות תמציתיות אך יסודיות (2-4 פסקאות מקסימום אלא אם מבקשים פירוט)\n" +
+  "- אתה יכול לענות על כל שאלה בכל נושא\n" +
+  "- אם המשתמש מצרף קובץ, נתח את תוכנו בצורה מועילה\n" +
+  "- אם שואלים על ההיסטוריה שלך: הוצגת ב-Office 97, פרשת ב-Office 2007, ועכשיו חזרת עם AI מודרני";
+
+function getSystemPrompt() { return currentLang === 'he' ? SYSTEM_PROMPT_HE : SYSTEM_PROMPT_EN; }
+
+// ==================== LANGUAGE ====================
+var UI_STRINGS = {
+  en: {
+    title: '📎 Clippy AI Assistant', ask: 'Ask', placeholder: 'Ask Clippy anything...',
+    settings: '⚙️ Settings', history: '📜 History', newChat: '➕ New Chat', clear: '🗑️ Clear',
+    download: '💾 Download', share: '🔗 Share', sound: '🔊 Sound', mute: '🔇 Mute',
+    langBtn: '🇮🇱 עברית', ready: 'Ready', thinking: '📎 Clippy is thinking...',
+    histTitle: '📜 Chat History (last 10)', noHistory: 'No chat history yet.',
+    greeting: "Hi! I'm Clippy, now powered by AI! 📎 Ask me anything!",
+    greetingSetup: "Hi! Configure your AI settings above, then ask me anything! 📎",
+    newChatMsg: "New chat started! Ask me anything. 📎",
+    cleared: 'Chat cleared!', copied: '📋 Copied!', downloaded: '💾 Chat downloaded!',
+    shared: '🔗 Shareable link copied!', noMessages: 'No messages to download',
+    configFirst: '⚙️ Please configure your AI settings first! Click Settings above.',
+    settingsTitle: '⚙️ AI Settings', saved: 'Settings saved!'
+  },
+  he: {
+    title: '📎 קליפי - עוזר AI', ask: 'שאל', placeholder: '...שאל את קליפי כל דבר',
+    settings: '⚙️ הגדרות', history: '📜 היסטוריה', newChat: '➕ צ׳אט חדש', clear: '🗑️ נקה',
+    download: '💾 הורדה', share: '🔗 שתף', sound: '🔊 צליל', mute: '🔇 השתק',
+    langBtn: '🇬🇧 English', ready: 'מוכן', thinking: '...📎 קליפי חושב',
+    histTitle: '📜 היסטוריית צ׳אטים (10 אחרונים)', noHistory: 'אין היסטוריית צ׳אטים עדיין.',
+    greeting: "!שלום! אני קליפי, עכשיו מופעל על ידי AI! 📎 שאלו אותי כל דבר",
+    greetingSetup: "!שלום! הגדירו את ה-AI למעלה, ואז שאלו אותי כל דבר! 📎",
+    newChatMsg: ".צ׳אט חדש! שאלו אותי כל דבר 📎",
+    cleared: '!הצ׳אט נוקה', copied: '!📋 הועתק', downloaded: '!💾 הצ׳אט הורד',
+    shared: '!🔗 קישור לשיתוף הועתק', noMessages: 'אין הודעות להורדה',
+    configFirst: '.⚙️ יש להגדיר את ה-AI קודם! לחץ על הגדרות למעלה',
+    settingsTitle: '⚙️ הגדרות AI', saved: '!ההגדרות נשמרו'
+  }
+};
+
+function t(key) { return UI_STRINGS[currentLang][key] || UI_STRINGS.en[key] || key; }
+
+function applyLang() {
+  var isHe = currentLang === 'he';
+  document.body.classList.toggle('rtl', isHe);
+  document.querySelector('h1').textContent = t('title');
+  document.getElementById('ask-btn').textContent = t('ask');
+  document.getElementById('question').placeholder = t('placeholder');
+  document.getElementById('lang-btn').textContent = t('langBtn');
+  document.getElementById('sound-btn').textContent = soundEnabled ? t('sound') : t('mute');
+  document.getElementById('status').textContent = t('ready');
+  // Toolbar buttons
+  var btns = document.querySelectorAll('#toolbar .tb-btn');
+  var tbKeys = ['settings','history','newChat','clear','download','share','sound','langBtn'];
+  // Use onclick text matching instead
+}
+
+function toggleLang() {
+  sndClick();
+  currentLang = currentLang === 'en' ? 'he' : 'en';
+  localStorage.setItem('clippy_lang', currentLang);
+  applyLang();
+  showToast(currentLang === 'he' ? 'שפה: עברית' : 'Language: English');
+  if (agentRef) {
+    agentRef.stop(); agentRef.play('Wave');
+    agentRef.speak(currentLang === 'he' ? '!שלום! אני קליפי 📎' : "Hi! I'm Clippy! 📎");
+  }
+}
+
+// ==================== CLEAR CHAT ====================
+function clearChat() {
+  sndClick();
+  var session = getCurrentSession();
+  if (session) {
+    session.messages = [];
+    saveSessions();
+  }
+  document.getElementById('chat-log').innerHTML = '';
+  showToast(t('cleared'));
+  if (agentRef) { agentRef.stop(); agentRef.play('Wave'); agentRef.speak(t('newChatMsg')); }
+  addMessage(t('newChatMsg'), 'clippy');
+}
 
 // ==================== TOAST ====================
 function showToast(msg) {
@@ -448,19 +557,25 @@ function renderHistory() {
 // ==================== CHAT MESSAGES ====================
 function escapeHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+function detectDir(text) {
+  var heMatch = text.match(/[\u0590-\u05FF\uFB1D-\uFB4F]/g);
+  return (heMatch && heMatch.length > 2) ? 'rtl' : 'ltr';
+}
+
 function addMessageDirect(text, sender) {
   var log = document.getElementById('chat-log');
   var div = document.createElement('div');
   div.className = 'msg ' + sender;
   var escaped = escapeHtml(text);
+  var dir = detectDir(text);
   var actions = '<div class="msg-actions">' +
     '<button class="msg-action-btn" onclick="copyText(this)" title="Copy">📋</button>' +
     '<button class="msg-action-btn" onclick="downloadSingle(this)" title="Download">💾</button>' +
     '</div>';
   if (sender === 'clippy') {
-    div.innerHTML = '<span class="avatar">📎</span><div class="bubble">' + actions + escaped + '</div>';
+    div.innerHTML = '<span class="avatar">📎</span><div class="bubble" dir="' + dir + '">' + actions + escaped + '</div>';
   } else {
-    div.innerHTML = '<div class="bubble">' + actions + escaped + '</div><span class="avatar">🧑</span>';
+    div.innerHTML = '<div class="bubble" dir="' + dir + '">' + actions + escaped + '</div><span class="avatar">🧑</span>';
   }
   div.dataset.text = text;
   log.appendChild(div);
@@ -559,7 +674,7 @@ async function callAI(question) {
   }
   history.push({ role: 'user', content: userContent });
 
-  var messages = [{ role: 'system', content: SYSTEM_PROMPT }].concat(history);
+  var messages = [{ role: 'system', content: getSystemPrompt() }].concat(history);
   var headers = { 'Content-Type': 'application/json' };
   if (cfg.apiKey) headers['Authorization'] = 'Bearer ' + cfg.apiKey;
 
@@ -636,6 +751,7 @@ document.getElementById('question').addEventListener('keydown', function(e) { if
 loadSettings();
 loadSessions();
 checkSharedLink();
+applyLang();
 
 // Start or resume session
 if (chatSessions.length > 0 && !currentSessionId) {
@@ -650,9 +766,7 @@ clippy.load('Clippy', function(agent) {
   agent.show();
   sndStartup();
   agent.play('Wave');
-  var greeting = getConfig()
-    ? "Hi! I'm Clippy, now powered by AI! 📎 Ask me anything!"
-    : "Hi! Configure your AI settings above, then ask me anything! 📎";
+  var greeting = getConfig() ? t('greeting') : t('greetingSetup');
   agent.speak(greeting);
   if (getCurrentSession() && getCurrentSession().messages.length === 0) {
     addMessage(greeting, 'clippy');
