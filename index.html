@@ -940,6 +940,21 @@ async function callAI(question) {
   }
 }
 
+// ==================== EASTER EGGS ====================
+var easterEggs = [
+  { match: ['מוצאו של נתן', 'נתן הטטרי', 'מוצאו של נתן הטטרי'], answer: '📎 טטרי! ברור שטטרי. על מה השאלה בכלל? 😄' }
+];
+
+function checkEasterEgg(question) {
+  var q = question.toLowerCase();
+  for (var i = 0; i < easterEggs.length; i++) {
+    for (var j = 0; j < easterEggs[i].match.length; j++) {
+      if (q.indexOf(easterEggs[i].match[j]) !== -1) return easterEggs[i].answer;
+    }
+  }
+  return null;
+}
+
 // ==================== ASK CLIPPY ====================
 async function askClippy() {
   if (isProcessing) return;
@@ -956,6 +971,21 @@ async function askClippy() {
   if (attachedFile) displayQ = '📄 [' + attachedFile.name + ']\n' + q;
   addMessage(displayQ, 'user');
   input.value = '';
+
+  // Check for easter eggs first
+  var egg = checkEasterEgg(q);
+  if (egg) {
+    sndReceive();
+    addMessage(egg, 'clippy');
+    clearFile();
+    document.getElementById('status').textContent = t('ready');
+    isProcessing = false;
+    document.getElementById('ask-btn').disabled = false;
+    input.focus();
+    clippyAnimate('happy', 2000);
+    clippySay(egg, 5000);
+    return;
+  }
 
   document.getElementById('status').innerHTML = '<span class="typing-indicator">' + t('thinking') + '</span>';
   clippyAnimate('think');
