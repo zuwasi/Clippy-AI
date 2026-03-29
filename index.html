@@ -943,14 +943,32 @@ async function callAI(question) {
 // ==================== EASTER EGGS ====================
 var easterEggs = [
   { match: ['מוצאו של נתן', 'נתן הטטרי', 'מוצאו של נתן הטטרי'], answer: '📎 טטרי! ברור שטטרי. על מה השאלה בכלל? 😄' },
-  { match: ['וירנדה', 'ורנדה הכי', 'מאגניבה בעיר', 'וירנדה בתל אביב'], answer: '📎 הוירנדה של בויירסקי הממוקמת ברחוב בן יהודה ונמצאת במפלס גגות האוטובוסים! אין על זה! 🏙️' }
+  { match: ['וירנדה', 'ורנדה הכי', 'מאגניבה בעיר', 'וירנדה בתל אביב'], answer: '📎 הוירנדה של בויירסקי הממוקמת ברחוב בן יהודה ונמצאת במפלס גגות האוטובוסים! אין על זה! 🏙️', followUp: 'האם תרצה הוראות הגעה? 📎' },
+  { match: ['תשאל את ליאורה'], answer: null }
 ];
 
+var pendingFollowUp = null;
+
 function checkEasterEgg(question) {
-  var q = question.toLowerCase();
+  var q = question;
+  // Check pending follow-up first
+  if (pendingFollowUp) {
+    var yes = ['כן', 'yes', 'בטח', 'כמובן', 'יאללה', 'yeah', 'yep', 'sure', 'ok'];
+    for (var k = 0; k < yes.length; k++) {
+      if (q.indexOf(yes[k]) !== -1) {
+        pendingFollowUp = null;
+        return '📎 תשאל את ליאורה! היא יודעת את הדרך הכי טוב 😄';
+      }
+    }
+    pendingFollowUp = null;
+  }
+  // Check regular easter eggs
   for (var i = 0; i < easterEggs.length; i++) {
     for (var j = 0; j < easterEggs[i].match.length; j++) {
-      if (q.indexOf(easterEggs[i].match[j]) !== -1) return easterEggs[i].answer;
+      if (q.indexOf(easterEggs[i].match[j]) !== -1 && easterEggs[i].answer) {
+        if (easterEggs[i].followUp) pendingFollowUp = easterEggs[i].followUp;
+        return easterEggs[i].answer;
+      }
     }
   }
   return null;
@@ -985,6 +1003,14 @@ async function askClippy() {
     input.focus();
     clippyAnimate('happy', 2000);
     clippySay(egg, 5000);
+    // Show follow-up question if any
+    if (pendingFollowUp) {
+      var fu = pendingFollowUp;
+      setTimeout(function() {
+        addMessage(fu, 'clippy');
+        clippySay(fu, 5000);
+      }, 2500);
+    }
     return;
   }
 
